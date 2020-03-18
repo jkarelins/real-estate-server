@@ -27,6 +27,9 @@ const User = db.define(
       type: Sequelize.BOOLEAN,
       defaultValue: false,
       allowNull: false
+    },
+    isActive: {
+      type: Sequelize.BOOLEAN
     }
   },
   {
