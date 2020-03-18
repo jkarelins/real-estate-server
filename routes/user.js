@@ -2,6 +2,7 @@ const { Router } = require("express");
 const router = new Router();
 
 const User = require("../models/user");
+const Agency = require("../models/agency");
 
 const bcrypt = require("bcrypt");
 const { toJWT } = require("../helpers/jwt");
@@ -29,21 +30,28 @@ router.post("/login", (req, res, next) => {
           message:
             "User with provided email does not exist. Please register first."
         });
-      } else if (bcrypt.compareSync(req.body.password, foundUser.password)) {
+      }
+      if (bcrypt.compareSync(req.body.password, foundUser.password)) {
+        if (foundUser.isBlockedByAdmin) {
+          return res.status(400).send({
+            message:
+              "Your account was suspended by site administration. Please contact our team ASAP."
+          });
+        }
+
+        //if everything is good, user can log in:
         return res.send({
           jwt: toJWT({ userId: foundUser.id }),
           email: foundUser.email,
           id: foundUser.id
         });
-      } else {
-        res.status(400).send({
-          message:
-            "Password and Username does not match. Check your credentials, and try one more time."
-        });
       }
+      return res.status(400).send({
+        message:
+          "Password and Username does not match. Check your credentials, and try one more time."
+      });
     })
     .catch(err => {
-      console.error(err);
       res.status(500).send({
         message: "Something went wrong. Try one more time later."
       });
@@ -58,6 +66,7 @@ router.post("/create", (req, res, next) => {
     });
   }
 
+  // check everything is in BODY
   if (
     !req.body.username ||
     !req.body.password ||
@@ -69,40 +78,63 @@ router.post("/create", (req, res, next) => {
     });
   }
 
+  // check if company is DB
+  if (req.body.role !== "privatePerson" && !req.body.companyName) {
+    return res.status(400).send({
+      message: "Agency name is not found."
+    });
+  }
+
   const user = {
     username: req.body.username,
     password: bcrypt.hashSync(req.body.password, 10),
-    role: req.body.role || "buyer",
+    role: req.body.role,
     email: req.body.email,
     phoneNumber: req.body.phoneNumber || 0,
     isAdmin: false
   };
-  User.findOne({
-    where: {
-      email: req.body.email
-    }
-  }).then(foundUser => {
-    if (foundUser) {
-      return res.status(400).send({
-        message: "Please choose another username. This username already exists."
-      });
-    }
-    User.create(user)
-      .then(newUser => {
-        res.send({
-          jwt: toJWT({ userId: newUser.id }),
-          username: newUser.username,
-          id: newUser.id
-        });
+
+  if (user.role === "agencyAgent") {
+    Agency.findOne({ where: { name: req.body.companyName } })
+      .then(agency => {
+        if (!agency) {
+          return res
+            .status(400)
+            .send({
+              message: "Sorry, your agency is not found. Contact your manager."
+            })
+            .end();
+        } else {
+          user.agencyId = agency.id;
+          return findAndCreateUser(req, res, next, user);
+        }
       })
       .catch(next);
-  });
+  } else if (user.role === "agencyManager") {
+    Agency.findOne({ where: { name: req.body.companyName } }).then(agency => {
+      if (agency) {
+        return res.status(400).send({
+          message:
+            "Sorry, we have agency with this name in our DB. Please contact your manager."
+        });
+      } else {
+        Agency.create({ name: req.body.companyName })
+          .then(newAgency => {
+            user.agencyId = newAgency.id;
+            return findAndCreateUser(req, res, next, user);
+          })
+          .catch(next);
+      }
+    });
+  } else {
+    return findAndCreateUser(req, res, next, user);
+  }
 });
 
 // GET ONE USER FROM DB
 router.get("/:id", (req, res, next) => {
   const { id } = req.params;
-  User.findByPk(id)
+  User.findByPk(id, { include: [Agency] })
     .then(user => {
       if (!user) {
         return res.status(404).send({
@@ -129,5 +161,35 @@ router.get("/", (req, res, next) => {
     })
     .catch(next);
 });
+
+function findAndCreateUser(req, res, next, user) {
+  User.findOne({
+    where: {
+      email: req.body.email
+    }
+  }).then(foundUser => {
+    if (foundUser) {
+      return res.status(400).send({
+        message: "Please choose another username. This username already exists."
+      });
+    }
+
+    if (user.role === "privatePerson") {
+      user.freeAdvertLimit = 1;
+    }
+    if (user.role === "agencyManager") {
+      user.freeAdvertLimit = 5;
+    }
+    User.create(user)
+      .then(newUser => {
+        return res.send({
+          jwt: toJWT({ userId: newUser.id }),
+          username: newUser.username,
+          id: newUser.id
+        });
+      })
+      .catch(next);
+  });
+}
 
 module.exports = router;
