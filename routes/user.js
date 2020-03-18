@@ -22,7 +22,8 @@ router.post("/login", (req, res, next) => {
   User.findOne({
     where: {
       email: req.body.email
-    }
+    },
+    include: [Agency]
   })
     .then(foundUser => {
       if (!foundUser) {
@@ -40,10 +41,10 @@ router.post("/login", (req, res, next) => {
         }
 
         //if everything is good, user can log in:
+        foundUser.password = "";
         return res.send({
           jwt: toJWT({ userId: foundUser.id }),
-          email: foundUser.email,
-          id: foundUser.id
+          user: foundUser
         });
       }
       return res.status(400).send({

@@ -5,7 +5,16 @@ const User = require("../models/user");
 const Agency = require("../models/agency");
 
 router.get("/", (req, res, next) => {
-  Agency.findAll()
+  Agency.findAll({
+    include: [
+      {
+        model: User,
+        attributes: {
+          exclude: ["password", "isAdmin", "isActive"]
+        }
+      }
+    ]
+  })
     .then(agencies => {
       if (!agencies) {
         return res.status(400).send({
