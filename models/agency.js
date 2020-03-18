@@ -19,4 +19,4 @@ const Agency = db.define(
 User.belongsTo(Agency);
 Agency.hasMany(User);
 
-module.exports = User;
+module.exports = Agency;

@@ -24,4 +24,4 @@ const Advert = db.define(
 Advert.belongsTo(User);
 User.hasMany(Advert);
 
-module.exports = User;
+module.exports = Advert;
