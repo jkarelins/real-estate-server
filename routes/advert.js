@@ -72,12 +72,13 @@ router.post("/", auth, checkForCredits, (req, res, next) => {
     });
   } else {
     const userId = req.user.id;
+    const { user } = req;
     Advert.create({
       ...req.body,
       userId
     })
       .then(newAdvert => {
-        res.json(newAdvert);
+        res.json({ newAdvert, user });
       })
       .catch(next);
   }
