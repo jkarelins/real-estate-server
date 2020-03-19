@@ -6,6 +6,7 @@ const Agency = require("../models/agency");
 
 const bcrypt = require("bcrypt");
 const { toJWT } = require("../helpers/jwt");
+const auth = require("../middleware/auth");
 
 // TRY TO LOGIN USER
 router.post("/login", (req, res, next) => {
@@ -130,6 +131,28 @@ router.post("/create", (req, res, next) => {
   } else {
     return findAndCreateUser(req, res, next, user);
   }
+});
+
+// ADD EXTRA PAID ADVERTISEMENTS
+router.post("/addcredits", auth, (req, res, next) => {
+  User.findByPk(req.user.id)
+    .then(foundUser => {
+      if (req.body.addExtra) {
+        foundUser.paidAdvertLimit =
+          +foundUser.paidAdvertLimit + +req.body.addExtra;
+        foundUser
+          .save()
+          .then(user => {
+            res.send(user);
+          })
+          .catch(next);
+      } else {
+        return res.status(400).send({
+          message: `Sorry credits amount is not found`
+        });
+      }
+    })
+    .catch(next);
 });
 
 // GET ONE USER FROM DB
