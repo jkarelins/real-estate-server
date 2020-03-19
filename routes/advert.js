@@ -3,6 +3,13 @@ const router = new Router();
 
 const User = require("../models/user");
 const Advert = require("../models/advert");
+const Image = require("../models/image/image");
+const AdvertImage = require("../models/image/advert_image");
+const Extra = require("../models/extra/extra");
+const AdvertExtra = require("../models/extra/advert_extra");
+const AdvertUserLikes = require("../models/aduserlikes");
+const Appointment = require("../models/appointment/appointment");
+const AdvertAppointment = require("../models/appointment/advertappointment");
 
 const auth = require("../middleware/auth");
 const { checkForCredits } = require("../middleware/credits");
