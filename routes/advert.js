@@ -17,7 +17,7 @@ router.get("/all", (req, res, next) => {
       {
         model: User,
         attributes: {
-          exclude: ["password", "isAdmin", "isActive"]
+          exclude: ["password", "isAdmin"]
         }
       }
     ]
@@ -42,7 +42,7 @@ router.get("/:advertId", (req, res, next) => {
       {
         model: User,
         attributes: {
-          exclude: ["password", "isAdmin", "isActive"]
+          exclude: ["password", "isAdmin"]
         }
       }
     ]

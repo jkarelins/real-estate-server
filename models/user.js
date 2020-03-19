@@ -35,7 +35,7 @@ const User = db.define(
       allowNull: false
     },
     // If agency is not confirmed -> agent can not post new advertisements
-    agencyConfirmedByManager: {
+    agentConfirmedByManager: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
       allowNull: false

@@ -185,8 +185,8 @@ function findAndCreateUser(req, res, next, user) {
       .then(newUser => {
         return res.send({
           jwt: toJWT({ userId: newUser.id }),
-          username: newUser.username,
-          id: newUser.id
+          user: newUser,
+          justRegistered: true
         });
       })
       .catch(next);
