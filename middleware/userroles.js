@@ -30,4 +30,34 @@ function getAgents(req, res, next) {
   }
 }
 
-module.exports = { getAgents };
+function isAgentManager(req, res, next) {
+  if (!req.user) {
+    return res.status(400).send({
+      message: `Something went wrong with your authorization.`
+    });
+  }
+
+  if (!req.params.agentId) {
+    return res.status(400).send({
+      message: `Cannot find agent with id: ${req.params.agentId}`
+    });
+  }
+
+  const { user } = req;
+  const { agentId } = req.params;
+  if (user.role === "agencyManager") {
+    User.findByPk(agentId)
+      .then(foundAgent => {
+        if (foundAgent.agencyId === user.agencyId) {
+          next();
+        } else {
+          return res.status(400).send({
+            message: `Manager is not agent's manager`
+          });
+        }
+      })
+      .catch(next);
+  }
+}
+
+module.exports = { getAgents, isAgentManager };
