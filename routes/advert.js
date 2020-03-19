@@ -5,6 +5,7 @@ const User = require("../models/user");
 const Advert = require("../models/advert");
 
 const auth = require("../middleware/auth");
+const { checkForCredits } = require("../middleware/credits");
 
 // GET ALL ADVERTISEMENTS USING LIMIT
 router.get("/all", (req, res, next) => {
@@ -59,26 +60,27 @@ router.get("/:advertId", (req, res, next) => {
 });
 
 // POST NEW ADVERTISEMENT
-router.post("/", auth, (req, res, next) => {
+router.post("/", auth, checkForCredits, (req, res, next) => {
   if (!req.body) {
-    return es.status(400).send({
+    return res.status(400).send({
       message: "Please supply a valid advertisement information"
     });
   }
   if (!req.body.description || !req.body.postcode) {
-    return es.status(400).send({
+    return res.status(400).send({
       message: "Please fill in required fields"
     });
-  }
-  const userId = req.user.id;
-  Advert.create({
-    ...req.body,
-    userId
-  })
-    .then(newAdvert => {
-      res.json(newAdvert);
+  } else {
+    const userId = req.user.id;
+    Advert.create({
+      ...req.body,
+      userId
     })
-    .catch(next);
+      .then(newAdvert => {
+        res.json(newAdvert);
+      })
+      .catch(next);
+  }
 });
 
 module.exports = router;
