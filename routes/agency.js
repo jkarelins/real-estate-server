@@ -1,8 +1,9 @@
 const { Router } = require("express");
 const router = new Router();
+const { Op } = require("sequelize");
+
 const { getAgents, isAgentManager } = require("../middleware/userroles");
 const auth = require("../middleware/auth");
-
 const User = require("../models/user");
 const Agency = require("../models/agency");
 
@@ -49,6 +50,23 @@ router.get("/agent/:agentId", auth, isAgentManager, (req, res, next) => {
           message: "Action not recognized by server."
         });
       }
+    })
+    .catch(next);
+});
+
+// SEARCH FOR AGENCY NAME ROUTE e.g. /agency/findby?name=mana
+router.get("/findby", (req, res, next) => {
+  const { name } = req.query;
+  Agency.findAll({
+    limit: 20,
+    where: {
+      name: {
+        [Op.iLike]: `%${name}%`
+      }
+    }
+  })
+    .then(agencies => {
+      res.json(agencies);
     })
     .catch(next);
 });
