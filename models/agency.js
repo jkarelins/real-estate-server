@@ -8,6 +8,11 @@ const Agency = db.define(
     name: {
       type: Sequelize.TEXT,
       allowNull: false
+    },
+    advertBalance: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: false
     }
   },
   {

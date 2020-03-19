@@ -29,14 +29,18 @@ function checkForCredits(req, res, next) {
           .catch(next);
       })
       .catch(next);
-  } else if (user.agency) {
-    if (agency.paidAdvertLimit > 0 && user.agentConfirmedByManager === true) {
+  } else if (user.agencyId) {
+    if (
+      user.agency.advertBalance > 0 &&
+      (user.agentConfirmedByManager === true || user.role === "agencyManager")
+    ) {
       Agency.findByPk(user.agencyId)
         .then(agency => {
-          agency.paidAdvertLimit = agency.paidAdvertLimit - 1;
+          agency.advertBalance = agency.advertBalance - 1;
           agency
             .save()
             .then(agency => {
+              req.user.agency.advertBalance = agency.advertBalance;
               return next();
             })
             .catch(next);

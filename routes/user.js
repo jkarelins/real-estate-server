@@ -7,6 +7,9 @@ const Agency = require("../models/agency");
 const bcrypt = require("bcrypt");
 const { toJWT } = require("../helpers/jwt");
 const auth = require("../middleware/auth");
+const AGENCY_AGENT = "agencyAgent";
+const AGENCY_MANAGER = "agencyManager";
+const PRIVATE_PERSON = "privatePerson";
 
 // TRY TO LOGIN USER
 router.post("/login", (req, res, next) => {
@@ -81,7 +84,7 @@ router.post("/create", (req, res, next) => {
   }
 
   // check if company is DB
-  if (req.body.role !== "privatePerson" && !req.body.companyName) {
+  if (req.body.role !== PRIVATE_PERSON && !req.body.companyName) {
     return res.status(400).send({
       message: "Agency name is not found."
     });
@@ -96,7 +99,7 @@ router.post("/create", (req, res, next) => {
     isAdmin: false
   };
 
-  if (user.role === "agencyAgent") {
+  if (user.role === AGENCY_AGENT) {
     Agency.findOne({ where: { name: req.body.companyName } })
       .then(agency => {
         if (!agency) {
@@ -112,7 +115,7 @@ router.post("/create", (req, res, next) => {
         }
       })
       .catch(next);
-  } else if (user.role === "agencyManager") {
+  } else if (user.role === AGENCY_MANAGER) {
     Agency.findOne({ where: { name: req.body.companyName } }).then(agency => {
       if (agency) {
         return res.status(400).send({
@@ -135,24 +138,43 @@ router.post("/create", (req, res, next) => {
 
 // ADD EXTRA PAID ADVERTISEMENTS
 router.post("/addcredits", auth, (req, res, next) => {
-  User.findByPk(req.user.id)
-    .then(foundUser => {
-      if (req.body.addExtra) {
-        foundUser.paidAdvertLimit =
-          +foundUser.paidAdvertLimit + +req.body.addExtra;
-        foundUser
-          .save()
-          .then(user => {
-            res.send(user);
-          })
-          .catch(next);
-      } else {
-        return res.status(400).send({
-          message: `Sorry credits amount is not found`
-        });
-      }
-    })
-    .catch(next);
+  if (req.body.addExtra) {
+    switch (req.user.role) {
+      case PRIVATE_PERSON:
+        {
+          User.findByPk(req.user.id)
+            .then(foundUser => {
+              foundUser.paidAdvertLimit =
+                +foundUser.paidAdvertLimit + +req.body.addExtra;
+              foundUser
+                .save()
+                .then(user => {
+                  res.send(user);
+                })
+                .catch(next);
+            })
+            .catch(next);
+        }
+        break;
+      case AGENCY_MANAGER || AGENCY_AGENT:
+        {
+          Agency.findByPk(req.user.agencyId).then(agency => {
+            agency.advertBalance = +agency.advertBalance + +req.body.addExtra;
+            agency
+              .save()
+              .then(agency => {
+                res.send(agency);
+              })
+              .catch(next);
+          });
+        }
+        break;
+    }
+  } else {
+    return res.status(400).send({
+      message: `Sorry credits amount is not found`
+    });
+  }
 });
 
 // GET ONE USER FROM DB
@@ -198,10 +220,10 @@ function findAndCreateUser(req, res, next, user) {
       });
     }
 
-    if (user.role === "privatePerson") {
+    if (user.role === PRIVATE_PERSON) {
       user.freeAdvertLimit = 1;
     }
-    if (user.role === "agencyManager") {
+    if (user.role === AGENCY_MANAGER) {
       user.freeAdvertLimit = 5;
     }
     User.create(user)

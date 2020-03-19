@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const Agency = require("../models/agency");
 const { toData } = require("../helpers/jwt");
 
 function auth(req, res, next) {
@@ -7,7 +8,7 @@ function auth(req, res, next) {
   if (auth && auth[0] === "Bearer" && auth[1]) {
     try {
       const data = toData(auth[1]);
-      User.findByPk(data.userId)
+      User.findByPk(data.userId, { include: [Agency] })
         .then(user => {
           if (!user) return next("User does not exist");
           req.user = user;
