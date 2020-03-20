@@ -46,10 +46,6 @@ router.get("/all", (req, res, next) => {
 //GET ALL USER'S || AGENCY'S RELATED ADVERTISEMENTS
 router.get("/myadvert", auth, (req, res, next) => {
   const { id, agencyId } = req.user;
-  // const { userId } = req.params;
-  // const agencyId = 5;
-  // console.log(userId);
-
   Advert.findAll({
     where: or({ userId: id }, { agencyId: agencyId })
   })
@@ -123,6 +119,34 @@ router.get("/:advertId/like", auth, (req, res, next) => {
         .catch(next);
     }
   });
+});
+
+// ROUTE TO MAKE AN APPOINTMENT
+router.post("/:advertId/appointment", (req, res, next) => {
+  const advertId = req.params.advertId;
+
+  Advert.findByPk(advertId)
+    .then(advert => {
+      if (!advert) {
+        return res.status(404).send({
+          message: `Sorry advert with ${advertId} not found`
+        });
+      } else {
+        Appointment.create({ ...req.body })
+          .then(appointment => {
+            AdvertAppointment.create({
+              advertId: advert.id,
+              appointmentId: appointment.id
+            })
+              .then(() => {
+                res.json(appointment);
+              })
+              .catch(next);
+          })
+          .catch(next);
+      }
+    })
+    .catch(next);
 });
 
 // FIND ONE ADVERTISEMENT
