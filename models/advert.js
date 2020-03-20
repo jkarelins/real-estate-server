@@ -98,6 +98,8 @@ const Advert = db.define(
 );
 
 Advert.belongsTo(User);
+Advert.belongsTo(Agency);
 User.hasMany(Advert);
+Agency.hasMany(Advert);
 
 module.exports = Advert;

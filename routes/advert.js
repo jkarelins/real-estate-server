@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const router = new Router();
+const { or } = require("sequelize");
 
 const User = require("../models/user");
 const Advert = require("../models/advert");
@@ -42,11 +43,34 @@ router.get("/all", (req, res, next) => {
     .catch(next);
 });
 
+//GET ALL USER'S || AGENCY'S RELATED ADVERTISEMENTS
+router.get("/myadvert", auth, (req, res, next) => {
+  const { id, agencyId } = req.user;
+  // const { userId } = req.params;
+  // const agencyId = 5;
+  // console.log(userId);
+
+  Advert.findAll({
+    where: or({ userId: id }, { agencyId: agencyId })
+  })
+    .then(adverts => {
+      res.json(adverts);
+    })
+    .catch(next);
+});
+
 // GET USER FAVORITE ADVERTS IF ACTIVE
 router.get("/favorites", auth, (req, res, next) => {
   const userId = req.user.id;
   AdvertUserLikes.findAll({
-    include: [{ model: Advert }],
+    include: [
+      {
+        model: Advert,
+        where: {
+          advertStatus: "published"
+        }
+      }
+    ],
     where: {
       userId: userId
     }
@@ -148,7 +172,8 @@ router.post("/", auth, checkForCredits, (req, res, next) => {
     const { user } = req;
     Advert.create({
       ...req.body,
-      userId
+      userId,
+      agencyId: user.agencyId
     })
       .then(newAdvert => {
         res.json({ newAdvert, user });
