@@ -42,6 +42,65 @@ router.get("/all", (req, res, next) => {
     .catch(next);
 });
 
+// GET USER FAVORITE ADVERTS IF ACTIVE
+router.get("/favorites", auth, (req, res, next) => {
+  const userId = req.user.id;
+  AdvertUserLikes.findAll({
+    include: [{ model: Advert }],
+    where: {
+      userId: userId
+    }
+  })
+    .then(favorites => {
+      res.json(favorites);
+    })
+    .catch(next);
+});
+
+// LIKE ONE ADVERT
+router.get("/:advertId/like", auth, (req, res, next) => {
+  const advertId = req.params.advertId;
+  const userId = req.user.id;
+  AdvertUserLikes.findOne({
+    where: {
+      advertId: advertId,
+      userId: userId
+    }
+  }).then(like => {
+    if (like) {
+      AdvertUserLikes.destroy({
+        where: {
+          advertId: advertId,
+          userId: userId
+        }
+      })
+        .then(() => {
+          res.send({ advertId: like.id, removed: true });
+        })
+        .catch(next);
+    } else {
+      Advert.findByPk(advertId)
+        .then(advert => {
+          if (advert) {
+            AdvertUserLikes.create({
+              userId,
+              advertId
+            })
+              .then(liked => {
+                res.json(liked);
+              })
+              .catch(next);
+          } else {
+            return res.status(404).send({
+              message: `Sorry advert with ${advertId} not found`
+            });
+          }
+        })
+        .catch(next);
+    }
+  });
+});
+
 // FIND ONE ADVERTISEMENT
 router.get("/:advertId", (req, res, next) => {
   const advertId = req.params.advertId;
@@ -73,7 +132,14 @@ router.post("/", auth, checkForCredits, (req, res, next) => {
       message: "Please supply a valid advertisement information"
     });
   }
-  if (!req.body.description || !req.body.postcode) {
+  if (
+    !req.body.description ||
+    !req.body.address ||
+    !req.body.postcode ||
+    !req.body.price ||
+    !req.body.advertStatus ||
+    !req.body.energyLabel
+  ) {
     return res.status(400).send({
       message: "Please fill in required fields"
     });

@@ -3,6 +3,7 @@ const router = new Router();
 
 const User = require("../models/user");
 const Agency = require("../models/agency");
+const AdvertUserLikes = require("../models/aduserlikes");
 
 const bcrypt = require("bcrypt");
 const { toJWT } = require("../helpers/jwt");
@@ -11,7 +12,7 @@ const AGENCY_AGENT = "agencyAgent";
 const AGENCY_MANAGER = "agencyManager";
 const PRIVATE_PERSON = "privatePerson";
 
-// TRY TO LOGIN USER
+// TRY TO LOGIN USER - GET AGENCY & LIKES
 router.post("/login", (req, res, next) => {
   if (!req.body) {
     return res.status(400).send({
@@ -27,7 +28,7 @@ router.post("/login", (req, res, next) => {
     where: {
       email: req.body.email
     },
-    include: [Agency]
+    include: [{ model: Agency }, { model: AdvertUserLikes }]
   })
     .then(foundUser => {
       if (!foundUser) {

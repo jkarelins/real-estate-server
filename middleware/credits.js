@@ -46,6 +46,11 @@ function checkForCredits(req, res, next) {
             .catch(next);
         })
         .catch(next);
+    } else {
+      return res.status(400).send({
+        message:
+          "Sorry you have not enough credits, or your manager have not confirmed your account."
+      });
     }
   } else {
     return res.status(400).send({
