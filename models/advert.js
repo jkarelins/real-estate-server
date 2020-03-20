@@ -6,6 +6,14 @@ const Agency = require("./agency");
 const Advert = db.define(
   "advert",
   {
+    isForSale: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false
+    },
+    isForRent: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false
+    },
     description: {
       type: Sequelize.TEXT,
       allowNull: false
@@ -65,6 +73,14 @@ const Advert = db.define(
     energyLabel: {
       type: Sequelize.STRING,
       allowNull: false
+    },
+    heating: {
+      type: Sequelize.TEXT,
+      allowNull: true
+    },
+    warmWater: {
+      type: Sequelize.TEXT,
+      allowNull: true
     },
     storage: {
       type: Sequelize.TEXT,
