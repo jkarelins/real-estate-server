@@ -48,7 +48,8 @@ router.get("/all", (req, res, next) => {
 router.get("/myadvert", auth, (req, res, next) => {
   const { id, agencyId } = req.user;
   Advert.findAll({
-    where: or({ userId: id }, { agencyId: agencyId })
+    where: or({ userId: id }, { agencyId: agencyId }),
+    include: [{ model: AdvertAppointment, include: [{ model: Appointment }] }]
   })
     .then(adverts => {
       res.json(adverts);
@@ -141,7 +142,7 @@ router.post("/:advertId/appointment", (req, res, next) => {
               appointmentId: appointment.id
             })
               .then(appointment => {
-                res.json(appointment);
+                res.json({ appointment, randomAddress });
               })
               .catch(next);
           })

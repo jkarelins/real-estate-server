@@ -5,7 +5,6 @@ const Appointment = require("../models/appointment/appointment");
 router.get("/:randomAddress", (req, res, next) => {
   if (req.params.randomAddress) {
     const { randomAddress } = req.params;
-    console.log(randomAddress);
     Appointment.findOne({ where: { randomAddress: randomAddress } })
       .then(appointment => {
         if (appointment) {
