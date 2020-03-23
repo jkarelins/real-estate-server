@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const router = new Router();
 const { or } = require("sequelize");
+const crypto = require("crypto");
 
 const User = require("../models/user");
 const Advert = require("../models/advert");
@@ -132,13 +133,14 @@ router.post("/:advertId/appointment", (req, res, next) => {
           message: `Sorry advert with ${advertId} not found`
         });
       } else {
-        Appointment.create({ ...req.body })
+        const randomAddress = crypto.randomBytes(32).toString("hex");
+        Appointment.create({ ...req.body, randomAddress })
           .then(appointment => {
             AdvertAppointment.create({
               advertId: advert.id,
               appointmentId: appointment.id
             })
-              .then(() => {
+              .then(appointment => {
                 res.json(appointment);
               })
               .catch(next);

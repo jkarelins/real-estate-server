@@ -31,6 +31,10 @@ const Appointment = db.define(
     text: {
       type: Sequelize.TEXT,
       allowNull: false
+    },
+    randomAddress: {
+      type: Sequelize.TEXT,
+      allowNull: false
     }
   },
   {
