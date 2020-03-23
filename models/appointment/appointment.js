@@ -32,9 +32,9 @@ const Appointment = db.define(
       type: Sequelize.TEXT,
       allowNull: false
     },
-    randomAddress: {
+    status: {
       type: Sequelize.TEXT,
-      allowNull: false
+      defaultValue: "published"
     }
   },
   {

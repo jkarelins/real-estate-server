@@ -2,6 +2,7 @@ const { Router } = require("express");
 const router = new Router();
 const { or } = require("sequelize");
 const crypto = require("crypto");
+// const randomAddress = crypto.randomBytes(32).toString("hex");
 
 const User = require("../models/user");
 const Advert = require("../models/advert");
@@ -124,8 +125,9 @@ router.get("/:advertId/like", auth, (req, res, next) => {
 });
 
 // ROUTE TO MAKE AN APPOINTMENT
-router.post("/:advertId/appointment", (req, res, next) => {
+router.post("/:advertId/appointment", auth, (req, res, next) => {
   const advertId = req.params.advertId;
+  const userId = req.user.id;
 
   Advert.findByPk(advertId)
     .then(advert => {
@@ -134,15 +136,19 @@ router.post("/:advertId/appointment", (req, res, next) => {
           message: `Sorry advert with ${advertId} not found`
         });
       } else {
-        const randomAddress = crypto.randomBytes(32).toString("hex");
-        Appointment.create({ ...req.body, randomAddress })
-          .then(appointment => {
-            AdvertAppointment.create({
-              advertId: advert.id,
-              appointmentId: appointment.id
-            })
+        User.findByPk(userId)
+          .then(user => {
+            Appointment.create({ ...req.body })
               .then(appointment => {
-                res.json({ appointment, randomAddress });
+                AdvertAppointment.create({
+                  advertId: advert.id,
+                  appointmentId: appointment.id,
+                  userId: userId
+                })
+                  .then(appointment => {
+                    res.json({ appointment });
+                  })
+                  .catch(next);
               })
               .catch(next);
           })
