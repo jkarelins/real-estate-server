@@ -1,6 +1,8 @@
 const Agency = require("../models/agency");
 const User = require("../models/user");
+const Advert = require("../models/advert");
 
+// GET ALL AGENCY MANAGERS
 function getAgents(req, res, next) {
   if (!req.user) {
     return res.status(400).send({
@@ -30,6 +32,7 @@ function getAgents(req, res, next) {
   }
 }
 
+//CHECK IS AGENT'S MANAGER
 function isAgentManager(req, res, next) {
   if (!req.user) {
     return res.status(400).send({
@@ -60,4 +63,26 @@ function isAgentManager(req, res, next) {
   }
 }
 
-module.exports = { getAgents, isAgentManager };
+//CHECK IT IS ADVERT OWNER
+function isAdvertOwner(req, res, next) {
+  if (req.params.advertId) {
+    Advert.findByPk(req.params.advertId)
+      .then(advert => {
+        if (advert.userId === req.user.id) {
+          req.advert = advert;
+          next();
+        } else {
+          res.status(400).send({
+            message: "You are not the owner of advertisement"
+          });
+        }
+      })
+      .catch(next);
+  } else {
+    res.status(400).send({
+      message: "Provide advertisement id"
+    });
+  }
+}
+
+module.exports = { getAgents, isAgentManager, isAdvertOwner };
