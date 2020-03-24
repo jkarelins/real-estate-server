@@ -19,7 +19,6 @@ router.post("/add/:advertId", auth, isAdvertOwner, (req, res, next) => {
         AdvertExtra.findOne({
           where: { advertId: advertId, extraId: extra.id }
         }).then(extraCon => {
-          // console.log("REACHED............................................");
           if (extraCon) {
             return res.status(400).send({
               message: "Sorry this extra was added to this advertisement before"
@@ -56,6 +55,7 @@ router.post("/add/:advertId", auth, isAdvertOwner, (req, res, next) => {
 //GET ALL EXTRAS SORTED BY USED COUNT, MOST POPULAR FIRST
 router.get("/all", (req, res, next) => {
   Extra.findAll({
+    limit: 20,
     order: [["used", "DESC"]]
   })
     .then(extras => {
@@ -75,9 +75,13 @@ router.delete(
       AdvertExtra.findOne({ where: { advertId: advertId, extraId: extraId } })
         .then(extraCon => {
           if (extraCon) {
-            extraCon
-              .destroy()
-              .then(() => res.send({ deleted: true, extraCon }))
+            Extra.findByPk(extraCon.extraId)
+              .then(extra => {
+                extraCon
+                  .destroy()
+                  .then(() => res.send(extra))
+                  .catch(next);
+              })
               .catch(next);
           } else {
             res.status(400).send({
