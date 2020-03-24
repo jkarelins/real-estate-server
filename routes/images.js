@@ -38,6 +38,40 @@ router.post("/upload/:advertId", auth, isAdvertOwner, (req, res, next) => {
     .catch(next);
 });
 
+//REMOVE ONE IMAGE
+router.delete(
+  "/:publicId/:advertId/:imageId",
+  auth,
+  isAdvertOwner,
+  (req, res, next) => {
+    if (req.params.publicId && req.params.imageId) {
+      const { publicId, imageId, advertId } = req.params;
+      cloudinary.uploader
+        .destroy(publicId)
+        .then(() => {
+          AdvertImage.findOne({
+            where: { advertId: advertId, imageId: imageId }
+          })
+            .then(imageCon => {
+              imageCon
+                .destroy()
+                .then(() => {
+                  Image.findByPk(imageId)
+                    .then(image => {
+                      image.destroy().then(() => res.send(image));
+                    })
+                    .catch(next);
+                })
+                .catch(next);
+            })
+            .catch(next);
+        })
+        .catch(next)
+        .catch(next);
+    }
+  }
+);
+
 module.exports = router;
 
 // function advertNotFound(res) {
