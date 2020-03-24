@@ -7,6 +7,10 @@ const Extra = db.define(
     text: {
       type: Sequelize.TEXT,
       allowNull: false
+    },
+    used: {
+      type: Sequelize.INTEGER,
+      allowNull: true
     }
   },
   {

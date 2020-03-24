@@ -7,6 +7,10 @@ const Image = db.define(
     url: {
       type: Sequelize.TEXT,
       allowNull: false
+    },
+    public_id: {
+      type: Sequelize.TEXT,
+      allowNull: false
     }
   },
   {
