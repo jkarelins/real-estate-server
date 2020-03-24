@@ -25,7 +25,7 @@ router.post("/upload/:advertId", auth, isAdvertOwner, (req, res, next) => {
   cloudinary.uploader
     .upload(path, { quality: "auto", fetch_format: "auto" })
     .then(data => {
-      Image.create({ url: data.url })
+      Image.create({ url: data.url, public_id: data.public_id })
         .then(image => {
           AdvertImage.create({ imageId: image.id, advertId: req.advert.id })
             .then(() => {

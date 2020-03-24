@@ -168,7 +168,8 @@ router.get("/:advertId", (req, res, next) => {
         attributes: {
           exclude: ["password", "isAdmin"]
         }
-      }
+      },
+      { model: AdvertImage, include: [Image] }
     ]
   })
     .then(advert => {
