@@ -1,7 +1,9 @@
 const { Router } = require("express");
 const router = new Router();
 const { or } = require("sequelize");
-const crypto = require("crypto");
+const axios = require("axios");
+// const crypto = require("crypto");
+
 // const randomAddress = crypto.randomBytes(32).toString("hex");
 
 const User = require("../models/user");
@@ -205,16 +207,82 @@ router.post("/", auth, checkForCredits, (req, res, next) => {
   } else {
     const userId = req.user.id;
     const { user } = req;
-    Advert.create({
-      ...req.body,
-      userId,
-      agencyId: user.agencyId
-    })
-      .then(newAdvert => {
-        res.json({ newAdvert, user });
+    const addressURLtry = encodeURIComponent(req.body.address);
+    const postcodeURLtry = encodeURIComponent(req.body.postcode);
+
+    axios
+      .get(
+        `https://nominatim.openstreetmap.org/search/${addressURLtry}?format=json`
+      )
+      .then(response => {
+        if (response.data.length === 0) {
+          axios
+            .get(
+              `https://nominatim.openstreetmap.org/search/${postcodeURLtry}?format=json`
+            )
+            .then(response => {
+              if (response.data.length === 0) {
+                return res.status(400).send({
+                  message:
+                    "Address not found in our database. Check your address"
+                });
+              } else {
+                const { data } = response;
+                const first = data[0];
+
+                Advert.create({
+                  ...req.body,
+                  userId,
+                  agencyId: user.agencyId,
+                  lat: first.lat,
+                  lon: first.lon,
+                  displayNameOpenMap: first.display_name,
+                  typeOpenMap: first.type
+                })
+                  .then(newAdvert => {
+                    res.json({ newAdvert, user });
+                  })
+                  .catch(next);
+              }
+            })
+            .catch(next);
+        } else {
+          const { data } = response;
+          const first = data[0];
+
+          Advert.create({
+            ...req.body,
+            userId,
+            agencyId: user.agencyId,
+            lat: first.lat,
+            lon: first.lon,
+            displayNameOpenMap: first.display_name,
+            typeOpenMap: first.type
+          })
+            .then(newAdvert => {
+              res.json({ newAdvert, user });
+            })
+            .catch(next);
+        }
       })
       .catch(next);
   }
 });
 
 module.exports = router;
+
+// [
+//   {
+//     place_id: 33033113,
+//     licence: 'Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright',
+//     osm_type: 'node',
+//     osm_id: 2797727874,
+//     boundingbox: [ '52.3539023', '52.3540023', '4.7728892', '4.7729892' ],
+//     lat: '52.3539523',
+//     lon: '4.7729392',
+//     display_name: '10, Hekla, De Aker, Amsterdam, Noord-Holland, Nederland, 1060NB, Nederland',
+//     class: 'place',
+//     type: 'house',
+//     importance: 0.22100000000000003
+//   }
+// ]

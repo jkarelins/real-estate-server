@@ -89,6 +89,22 @@ const Advert = db.define(
     parking: {
       type: Sequelize.TEXT,
       allowNull: true
+    },
+    lat: {
+      type: Sequelize.TEXT,
+      allowNull: false
+    },
+    lon: {
+      type: Sequelize.TEXT,
+      allowNull: false
+    },
+    displayNameOpenMap: {
+      type: Sequelize.TEXT,
+      allowNull: false
+    },
+    typeOpenMap: {
+      type: Sequelize.TEXT,
+      allowNull: false
     }
   },
   {
