@@ -1,10 +1,11 @@
 const { Router } = require("express");
 const router = new Router();
 require("dotenv").config();
+const auth = require("../middleware/auth");
 
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 
-router.get("/:amountInCents", async (req, res, next) => {
+router.get("/:amountInCents", auth, async (req, res, next) => {
   const { amountInCents } = req.params;
   stripe.paymentIntents
     .create({
@@ -17,12 +18,6 @@ router.get("/:amountInCents", async (req, res, next) => {
       res.send(paymentIntent);
     })
     .catch(next);
-});
-
-router.post("/confirmed", (req, res, next) => {
-  console.log("good");
-  // confirmation received
-  res.send({ confirmed: true });
 });
 
 module.exports = router;
