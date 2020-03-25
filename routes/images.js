@@ -29,7 +29,11 @@ router.post("/upload/:advertId", auth, isAdvertOwner, (req, res, next) => {
         .then(image => {
           AdvertImage.create({ imageId: image.id, advertId: req.advert.id })
             .then(() => {
-              res.send({ url: data.url });
+              res.send({
+                url: data.url,
+                public_id: data.public_id,
+                id: image.id
+              });
             })
             .catch(next);
         })
