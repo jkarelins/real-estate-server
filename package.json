@@ -9,6 +9,7 @@
   "author": "J Karelins <jkarelins@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@mollie/api-client": "^3.0.0-beta.1",
     "axios": "^0.19.2",
     "bcrypt": "^4.0.1",
     "cloudinary": "^1.20.0",
