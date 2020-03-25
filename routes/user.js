@@ -139,14 +139,17 @@ router.post("/create", (req, res, next) => {
 
 // ADD EXTRA PAID ADVERTISEMENTS
 router.post("/addcredits", auth, (req, res, next) => {
-  if (req.body.addExtra) {
+  console.log(req.user.role);
+
+  if (req.body.paymentIntent.status === "succeeded") {
     switch (req.user.role) {
       case PRIVATE_PERSON:
         {
           User.findByPk(req.user.id)
             .then(foundUser => {
               foundUser.paidAdvertLimit =
-                +foundUser.paidAdvertLimit + +req.body.addExtra;
+                +foundUser.paidAdvertLimit +
+                Math.round(+req.body.paymentIntent.amount / 100);
               foundUser
                 .save()
                 .then(user => {
@@ -160,7 +163,9 @@ router.post("/addcredits", auth, (req, res, next) => {
       case AGENCY_MANAGER || AGENCY_AGENT:
         {
           Agency.findByPk(req.user.agencyId).then(agency => {
-            agency.advertBalance = +agency.advertBalance + +req.body.addExtra;
+            agency.advertBalance =
+              +agency.advertBalance +
+              Math.round(+req.body.paymentIntent.amount / 100);
             agency
               .save()
               .then(agency => {
@@ -173,7 +178,7 @@ router.post("/addcredits", auth, (req, res, next) => {
     }
   } else {
     return res.status(400).send({
-      message: `Sorry credits amount is not found`
+      message: `Sorry payment was not successful`
     });
   }
 });
