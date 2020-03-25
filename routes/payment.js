@@ -10,7 +10,6 @@ router.get("/:amountInCents", async (req, res, next) => {
     .create({
       amount: amountInCents,
       currency: "eur",
-      // customer: 1,
       metadata: { integration_check: "accept_a_payment" }
     })
     .then(paymentIntent => {
@@ -22,6 +21,7 @@ router.get("/:amountInCents", async (req, res, next) => {
 
 router.post("/confirmed", (req, res, next) => {
   console.log("good");
+  // confirmation received
   res.send({ confirmed: true });
 });
 
