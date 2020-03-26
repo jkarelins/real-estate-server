@@ -2,6 +2,8 @@ const { Router } = require("express");
 const router = new Router();
 
 const auth = require("../middleware/auth");
+const { hasConnectionToAppointment } = require("../middleware/userroles");
+
 const Appointment = require("../models/appointment/appointment");
 const AdvertAppointment = require("../models/appointment/advertappointment");
 
@@ -33,8 +35,20 @@ router.get("/:advertId/advert", auth, (req, res, next) => {
     .catch(next);
 });
 
+// EDIT ONE APPOINTMENT - IF AUTHOR or RECEIVER OF APPOINTMENT
+router.put("/:appId/edit", auth, (req, res, next) => {
+  Appointment.findByPk(req.params.appId).then(appointment => {
+    appointment
+      .update(req.body)
+      .then(updated => {
+        res.send(updated);
+      })
+      .catch(next);
+  });
+});
+
 // CANCEL APPOINTMENT IF ADDED BY THIS USER
-router.put("/:id", auth, (req, res, next) => {
+router.put("/:id", auth, hasConnectionToAppointment, (req, res, next) => {
   Appointment.findByPk(req.params.id).then(appointment => {
     AdvertAppointment.findOne({
       where: { appointmentId: appointment.id, userId: req.user.id }
@@ -47,7 +61,7 @@ router.put("/:id", auth, (req, res, next) => {
           .catch(next);
       } else {
         res.status(400).send({
-          message: "Something ent erong"
+          message: "Something went erong"
         });
       }
     });
