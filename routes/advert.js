@@ -197,6 +197,7 @@ router.post("/", auth, checkForCredits, (req, res, next) => {
     !req.body.description ||
     !req.body.address ||
     !req.body.postcode ||
+    !req.body.city ||
     !req.body.price ||
     !req.body.advertStatus ||
     !req.body.energyLabel
@@ -207,18 +208,22 @@ router.post("/", auth, checkForCredits, (req, res, next) => {
   } else {
     const userId = req.user.id;
     const { user } = req;
-    const addressURLtry = encodeURIComponent(req.body.address);
-    const postcodeURLtry = encodeURIComponent(req.body.postcode);
+    const addressURLtry = encodeURIComponent(
+      `${req.body.address}, ${req.body.city}`
+    );
+    const postcodeURLtry = encodeURIComponent(
+      req.body.postcode.replace(/\s/g, "")
+    );
 
     axios
       .get(
-        `https://nominatim.openstreetmap.org/search/${addressURLtry}?format=json`
+        `https://nominatim.openstreetmap.org/search/${postcodeURLtry}?format=json`
       )
       .then(response => {
         if (response.data.length === 0) {
           axios
             .get(
-              `https://nominatim.openstreetmap.org/search/${postcodeURLtry}?format=json`
+              `https://nominatim.openstreetmap.org/search/${addressURLtry}?format=json`
             )
             .then(response => {
               if (response.data.length === 0) {
@@ -233,6 +238,9 @@ router.post("/", auth, checkForCredits, (req, res, next) => {
                 Advert.create({
                   ...req.body,
                   userId,
+                  postcode: req.body.postcode.toUpperCase().replace(/\s/g, ""),
+                  energyLabel: req.body.energyLabel.toUpperCase(),
+                  city: req.body.city.replace(/^\w/, c => c.toUpperCase()),
                   agencyId: user.agencyId,
                   lat: first.lat,
                   lon: first.lon,
@@ -253,6 +261,9 @@ router.post("/", auth, checkForCredits, (req, res, next) => {
           Advert.create({
             ...req.body,
             userId,
+            postcode: req.body.postcode.toUpperCase().replace(/\s/g, ""),
+            energyLabel: req.body.energyLabel.toUpperCase(),
+            city: req.body.city.replace(/^\w/, c => c.toUpperCase()),
             agencyId: user.agencyId,
             lat: first.lat,
             lon: first.lon,

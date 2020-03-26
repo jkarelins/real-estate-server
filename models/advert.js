@@ -26,6 +26,10 @@ const Advert = db.define(
       type: Sequelize.TEXT,
       allowNull: false
     },
+    city: {
+      type: Sequelize.TEXT,
+      allowNull: false
+    },
     postcode: {
       type: Sequelize.STRING,
       allowNull: false
