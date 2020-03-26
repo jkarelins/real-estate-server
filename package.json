@@ -4,6 +4,7 @@
   "description": "Node based server for real eastate website",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "J Karelins <jkarelins@gmail.com>",
