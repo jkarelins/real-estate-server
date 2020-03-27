@@ -2,11 +2,9 @@ const { Router } = require("express");
 const router = new Router();
 const { or } = require("sequelize");
 const axios = require("axios");
-// const crypto = require("crypto");
-
-// const randomAddress = crypto.randomBytes(32).toString("hex");
 
 const User = require("../models/user");
+const Agency = require("../models/agency");
 const Advert = require("../models/advert");
 const Image = require("../models/image/image");
 const AdvertImage = require("../models/image/advert_image");
@@ -32,6 +30,11 @@ router.get("/all", (req, res, next) => {
         attributes: {
           exclude: ["password", "isAdmin"]
         }
+      },
+      {
+        model: AdvertImage,
+        limit: 1,
+        include: [Image]
       }
     ]
   })
@@ -169,7 +172,8 @@ router.get("/:advertId", (req, res, next) => {
         model: User,
         attributes: {
           exclude: ["password", "isAdmin"]
-        }
+        },
+        include: [Agency]
       },
       { model: AdvertImage, include: [Image] },
       { model: AdvertExtra, include: [Extra] }
@@ -281,19 +285,3 @@ router.post("/", auth, checkForCredits, (req, res, next) => {
 });
 
 module.exports = router;
-
-// [
-//   {
-//     place_id: 33033113,
-//     licence: 'Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright',
-//     osm_type: 'node',
-//     osm_id: 2797727874,
-//     boundingbox: [ '52.3539023', '52.3540023', '4.7728892', '4.7729892' ],
-//     lat: '52.3539523',
-//     lon: '4.7729392',
-//     display_name: '10, Hekla, De Aker, Amsterdam, Noord-Holland, Nederland, 1060NB, Nederland',
-//     class: 'place',
-//     type: 'house',
-//     importance: 0.22100000000000003
-//   }
-// ]

@@ -2,6 +2,8 @@
 
 Dependent project (client UI for this API)
 
+[Deployed Version](https://shielded-journey-92023.herokuapp.com/)
+
 #### Real Estate Client
 
 [See Client Project](https://github.com/jkarelins/real-estate-site)
@@ -17,6 +19,7 @@ Server to run real estate project
 - [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
 - [Sequelize](https://sequelize.org/)
 - [Bcrypt](https://www.npmjs.com/package/bcrypt)
+- [Heroku](https://heroku.com)
 
 ## API routes list
 
