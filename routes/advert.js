@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const router = new Router();
-const { or } = require("sequelize");
+const { or, Op } = require("sequelize");
 const axios = require("axios");
 
 const User = require("../models/user");
@@ -21,33 +21,11 @@ const { checkForCredits } = require("../middleware/credits");
 router.get("/all", (req, res, next) => {
   const limit = 25;
   const offset = req.query.offset || 0;
-  Advert.findAndCountAll({
-    limit,
-    offset,
-    include: [
-      {
-        model: User,
-        attributes: {
-          exclude: ["password", "isAdmin"]
-        }
-      },
-      {
-        model: AdvertImage,
-        limit: 1,
-        include: [Image]
-      }
-    ]
-  })
-    .then(adverts => {
-      if (!adverts.rows) {
-        return res.status(404).send({
-          message: "Sorry no adverts found"
-        });
-      }
-      const { rows, count } = adverts;
-      res.json({ data: rows, count: count });
-    })
-    .catch(next);
+  if (req.query.city) {
+    const { city } = req.query;
+    return findAdvertsByCityName(req, res, next, limit, offset, city);
+  }
+  return finAllAdverts(req, res, next, limit, offset);
 });
 
 //GET ALL USER'S || AGENCY'S RELATED ADVERTISEMENTS
@@ -285,3 +263,68 @@ router.post("/", auth, checkForCredits, (req, res, next) => {
 });
 
 module.exports = router;
+
+function finAllAdverts(req, res, next, limit, offset) {
+  Advert.findAndCountAll({
+    limit,
+    offset,
+    include: [
+      {
+        model: User,
+        attributes: {
+          exclude: ["password", "isAdmin"]
+        }
+      },
+      {
+        model: AdvertImage,
+        limit: 1,
+        include: [Image]
+      }
+    ]
+  })
+    .then(adverts => {
+      if (!adverts.rows) {
+        return res.status(404).send({
+          message: "Sorry no adverts found"
+        });
+      }
+      const { rows, count } = adverts;
+      res.json({ data: rows, count: count });
+    })
+    .catch(next);
+}
+
+function findAdvertsByCityName(req, res, next, limit, offset, city) {
+  Advert.findAndCountAll({
+    where: {
+      city: {
+        [Op.iLike]: `%${city}%`
+      }
+    },
+    limit,
+    offset,
+    include: [
+      {
+        model: User,
+        attributes: {
+          exclude: ["password", "isAdmin"]
+        }
+      },
+      {
+        model: AdvertImage,
+        limit: 1,
+        include: [Image]
+      }
+    ]
+  })
+    .then(adverts => {
+      if (!adverts.rows) {
+        return res.status(404).send({
+          message: "Sorry no adverts found"
+        });
+      }
+      const { rows, count } = adverts;
+      res.json({ data: rows, count: count });
+    })
+    .catch(next);
+}
