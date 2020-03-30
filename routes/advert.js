@@ -17,8 +17,10 @@ const AdvertAppointment = require("../models/appointment/advertappointment");
 const auth = require("../middleware/auth");
 const { checkForCredits } = require("../middleware/credits");
 
+const generateNew = require("../middleware/generator");
+
 // GET ALL ADVERTISEMENTS USING LIMIT
-router.get("/all", (req, res, next) => {
+router.get("/all", generateNew, (req, res, next) => {
   const limit = 25;
   const offset = req.query.offset || 0;
   if (req.query.city) {
