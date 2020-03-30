@@ -4,8 +4,11 @@ require("dotenv").config();
 const auth = require("../middleware/auth");
 
 const stripe = require("stripe")(process.env.STRIPE_KEY);
+console.log(process.env.STRIPE_KEY);
 
 router.get("/:amountInCents", auth, async (req, res, next) => {
+  console.log(process.env.STRIPE_KEY);
+
   const { amountInCents } = req.params;
   stripe.paymentIntents
     .create({
