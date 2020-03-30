@@ -36,7 +36,7 @@ const Advert = db.define(
     },
     sqrMeter: {
       type: Sequelize.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     cubicMeter: {
       type: Sequelize.INTEGER,
