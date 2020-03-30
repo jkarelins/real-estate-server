@@ -21,6 +21,7 @@ function auth(req, res, next) {
       });
     }
   } else {
+    console.log(auth);
     res.status(401).send({
       message: "Please supply some valid credentials"
     });
