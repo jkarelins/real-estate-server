@@ -34,7 +34,10 @@ router.get("/myadvert", auth, (req, res, next) => {
   if (agencyId === null) {
     Advert.findAll({
       where: { userId: id },
-      include: [{ model: AdvertAppointment, include: [{ model: Appointment }] }]
+      include: [
+        { model: AdvertAppointment, include: [{ model: Appointment }] },
+        { model: AdvertImage, include: [Image] }
+      ]
     })
       .then(adverts => {
         res.json(adverts);
@@ -43,7 +46,10 @@ router.get("/myadvert", auth, (req, res, next) => {
   } else {
     Advert.findAll({
       where: or({ userId: id }, { agencyId: agencyId }),
-      include: [{ model: AdvertAppointment, include: [{ model: Appointment }] }]
+      include: [
+        { model: AdvertAppointment, include: [{ model: Appointment }] },
+        { model: AdvertImage, include: [Image] }
+      ]
     })
       .then(adverts => {
         res.json(adverts);
@@ -61,7 +67,8 @@ router.get("/favorites", auth, (req, res, next) => {
         model: Advert,
         where: {
           advertStatus: "published"
-        }
+        },
+        include: [{ model: AdvertImage, include: [Image] }]
       }
     ],
     where: {
