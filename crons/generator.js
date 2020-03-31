@@ -15,12 +15,7 @@ const axios = require("axios");
 const AGENCY_MANAGER = "agencyManager";
 const PRIVATE_PERSON = "privatePerson";
 
-cron.schedule("*/2 * * * *", () => {
-  generateNew();
-  console.log("running a task every two minutes");
-});
-
-function generateNew(req, res, next) {
+function generateNew() {
   axios
     .get("https://fast-spire-97359.herokuapp.com/")
     .then(response => {
@@ -33,20 +28,28 @@ function generateNew(req, res, next) {
                 user.agencyId = agency.id;
                 user
                   .save()
-                  .then(() => createAdvert(data, next, user.id, res, user))
-                  .catch(next);
+                  .then(() => createAdvert(data, user.id, user))
+                  .catch(err => {
+                    console.log(err);
+                  });
               })
-              .catch(next);
+              .catch(err => {
+                console.log(err);
+              });
           } else {
-            createAdvert(data, next, user.id, res, user);
+            createAdvert(data, user.id, user);
           }
         })
-        .catch(next);
+        .catch(err => {
+          console.log(err);
+        });
     })
-    .catch(next);
+    .catch(err => {
+      console.log(err);
+    });
 }
 
-function createAdvert(data, next, userId, res, user) {
+function createAdvert(data, userId, user) {
   const energyLabel = "C";
   const addressURLtry = encodeURIComponent(`${data.newAdress.address}`);
   const postcodeURLtry = encodeURIComponent(
@@ -65,7 +68,7 @@ function createAdvert(data, next, userId, res, user) {
           )
           .then(response => {
             if (response.data.length === 0) {
-              next();
+              return;
             } else {
               const first = response.data[0];
 
@@ -84,12 +87,16 @@ function createAdvert(data, next, userId, res, user) {
                 typeOpenMap: first.type
               })
                 .then(newAdvert => {
-                  next();
+                  return;
                 })
-                .catch(next);
+                .catch(err => {
+                  console.log(err);
+                });
             }
           })
-          .catch(next);
+          .catch(err => {
+            console.log(err);
+          });
       } else {
         const first = response.data[0];
 
@@ -106,12 +113,24 @@ function createAdvert(data, next, userId, res, user) {
           typeOpenMap: first.type
         })
           .then(newAdvert => {
-            res.json({ newAdvert, user });
+            return;
           })
-          .catch(next);
+          .catch(err => {
+            console.log(err);
+          });
       }
     })
-    .catch(next);
+    .catch(err => {
+      console.log(err);
+    });
 }
 
-module.exports = generateNew;
+function generator(config) {
+  cron.schedule(config, () => {
+    generateNew();
+    console.log("creating new advert every 1 hour");
+    require("console-stamp")(console, "[HH:MM:ss.l]");
+  });
+}
+
+module.exports = generator;

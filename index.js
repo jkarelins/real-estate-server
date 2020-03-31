@@ -9,6 +9,7 @@ const appointmentRoute = require("./routes/appointment");
 const imageRoute = require("./routes/images");
 const extraRoute = require("./routes/extra");
 const paymentRoute = require("./routes/payment");
+const generator = require("./crons/generator");
 
 app.use(require("cors")());
 app.use(require("body-parser").json());
@@ -19,5 +20,8 @@ app.use("/appointment", appointmentRoute);
 app.use("/image", imageRoute);
 app.use("/extra", extraRoute);
 app.use("/payment", paymentRoute);
+
+//SHOULD RUN EACH HOUR
+generator("0 1 * * *");
 
 app.listen(port, () => console.log(`RealEstate API running on port ${port}!`));
