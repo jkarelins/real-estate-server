@@ -22,6 +22,6 @@ app.use("/extra", extraRoute);
 app.use("/payment", paymentRoute);
 
 //SHOULD RUN EACH HOUR
-generator("0 1 * * *");
+// generator("0 1 * * *");
 
 app.listen(port, () => console.log(`RealEstate API running on port ${port}!`));

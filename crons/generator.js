@@ -129,6 +129,7 @@ function generator(config) {
   cron.schedule(config, () => {
     generateNew();
     console.log("creating new advert every 1 hour");
+    //can be removed later, console just to check, that it runs each 1 hour
     require("console-stamp")(console, "[HH:MM:ss.l]");
   });
 }

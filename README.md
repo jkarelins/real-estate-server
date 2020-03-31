@@ -20,6 +20,7 @@ Server to run real estate project
 - [Sequelize](https://sequelize.org/)
 - [Bcrypt](https://www.npmjs.com/package/bcrypt)
 - [Heroku](https://heroku.com)
+- [Node Cron](https://www.npmjs.com/package/node-cron)
 
 ## API routes list
 

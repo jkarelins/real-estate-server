@@ -31,14 +31,25 @@ router.get("/all", (req, res, next) => {
 //GET ALL USER'S || AGENCY'S RELATED ADVERTISEMENTS
 router.get("/myadvert", auth, (req, res, next) => {
   const { id, agencyId } = req.user;
-  Advert.findAll({
-    where: or({ userId: id }, { agencyId: agencyId }),
-    include: [{ model: AdvertAppointment, include: [{ model: Appointment }] }]
-  })
-    .then(adverts => {
-      res.json(adverts);
+  if (agencyId === null) {
+    Advert.findAll({
+      where: { userId: id },
+      include: [{ model: AdvertAppointment, include: [{ model: Appointment }] }]
     })
-    .catch(next);
+      .then(adverts => {
+        res.json(adverts);
+      })
+      .catch(next);
+  } else {
+    Advert.findAll({
+      where: or({ userId: id }, { agencyId: agencyId }),
+      include: [{ model: AdvertAppointment, include: [{ model: Appointment }] }]
+    })
+      .then(adverts => {
+        res.json(adverts);
+      })
+      .catch(next);
+  }
 });
 
 // GET USER FAVORITE ADVERTS IF ACTIVE
