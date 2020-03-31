@@ -11,7 +11,6 @@ const AdvertAppointment = require("../models/appointment/advertappointment");
 
 const cron = require("node-cron");
 const axios = require("axios");
-const consoleStamp = require("console-stamp");
 
 const AGENCY_MANAGER = "agencyManager";
 const PRIVATE_PERSON = "privatePerson";
@@ -129,8 +128,8 @@ function createAdvert(data, userId, user) {
 function generator(config) {
   cron.schedule(config, () => {
     generateNew();
+    console.log("creating new advert every 1 hour");
     //can be removed later, console just to check, that it runs each 1 hour
-    consoleStamp(console, "[HH:MM:ss.l]", "new advert created every 1 hour");
   });
 }
 
