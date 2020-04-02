@@ -62,41 +62,47 @@ function createAdvert(data, userId, user) {
     )
     .then(response => {
       if (response.data.length === 0) {
-        axios
-          .get(
-            `https://nominatim.openstreetmap.org/search/${addressURLtry}?format=json`
-          )
-          .then(response => {
-            if (response.data.length === 0) {
-              return;
-            } else {
-              const first = response.data[0];
-
-              Advert.create({
-                ...data.newAdress,
-                userId,
-                postcode: data.newAdress.postcode
-                  .toUpperCase()
-                  .replace(/\s/g, ""),
-                energyLabel,
-                city: data.newAdress.city.replace(/^\w/, c => c.toUpperCase()),
-                agencyId: user.agencyId,
-                lat: first.lat,
-                lon: first.lon,
-                displayNameOpenMap: first.display_name,
-                typeOpenMap: first.type
-              })
-                .then(newAdvert => {
+        setTimeout(
+          () =>
+            axios
+              .get(
+                `https://nominatim.openstreetmap.org/search/${addressURLtry}?format=json`
+              )
+              .then(response => {
+                if (response.data.length === 0) {
                   return;
-                })
-                .catch(err => {
-                  console.log(err);
-                });
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          });
+                } else {
+                  const first = response.data[0];
+
+                  Advert.create({
+                    ...data.newAdress,
+                    userId,
+                    postcode: data.newAdress.postcode
+                      .toUpperCase()
+                      .replace(/\s/g, ""),
+                    energyLabel,
+                    city: data.newAdress.city.replace(/^\w/, c =>
+                      c.toUpperCase()
+                    ),
+                    agencyId: user.agencyId,
+                    lat: first.lat,
+                    lon: first.lon,
+                    displayNameOpenMap: first.display_name,
+                    typeOpenMap: first.type
+                  })
+                    .then(newAdvert => {
+                      return;
+                    })
+                    .catch(err => {
+                      console.log(err);
+                    });
+                }
+              })
+              .catch(err => {
+                console.log(err);
+              }),
+          1000
+        );
       } else {
         const first = response.data[0];
 
