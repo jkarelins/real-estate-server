@@ -17,13 +17,20 @@ const AdvertAppointment = require("../models/appointment/advertappointment");
 const auth = require("../middleware/auth");
 const { checkForCredits } = require("../middleware/credits");
 
+const { generateQuery, generateQueryForAllCities } = require("./advertqueries");
+
 // GET ALL ADVERTISEMENTS USING LIMIT
 router.get("/all", (req, res, next) => {
-  const limit = 25;
+  // console.log(req)
+  const limit = 12;
   const offset = req.query.offset || 0;
   if (req.query.city) {
     const { city } = req.query;
-    return findAdvertsByCityName(req, res, next, limit, offset, city);
+    if (city === "any") {
+      return finAllAdvertsWithParams(req, res, next, limit, offset);
+    } else {
+      return findAdvertsByCityName(req, res, next, limit, offset, city);
+    }
   }
   return finAllAdverts(req, res, next, limit, offset);
 });
@@ -313,28 +320,55 @@ function finAllAdverts(req, res, next, limit, offset) {
 }
 
 function findAdvertsByCityName(req, res, next, limit, offset, city) {
-  Advert.findAndCountAll({
-    where: {
-      city: {
-        [Op.iLike]: `%${city}%`
-      }
-    },
+  // console.log(req, "was here");
+  const { pricefrom, priceto, forrent, forsale } = req.query;
+  const priceFrom = pricefrom || 0;
+  const priceTo = priceto || 20000000;
+  const forRent = forrent ? true : false;
+  const forSale = forsale ? true : false;
+
+  const query = generateQuery(
+    priceFrom,
+    priceTo,
+    forRent,
+    forSale,
+    city,
     limit,
-    offset,
-    include: [
-      {
-        model: User,
-        attributes: {
-          exclude: ["password", "isAdmin"]
-        }
-      },
-      {
-        model: AdvertImage,
-        limit: 1,
-        include: [Image]
+    offset
+  );
+
+  // console.log(city, priceFrom, priceTo, forRent, forSale, limit, offset);
+  Advert.findAndCountAll(query)
+    .then(adverts => {
+      if (!adverts.rows) {
+        return res.status(404).send({
+          message: "Sorry no adverts found"
+        });
       }
-    ]
-  })
+      const { rows, count } = adverts;
+      res.json({ data: rows, count: count });
+    })
+    .catch(next);
+}
+
+function finAllAdvertsWithParams(req, res, next, limit, offset) {
+  const { pricefrom, priceto, forrent, forsale } = req.query;
+  const priceFrom = pricefrom || 0;
+  const priceTo = priceto || 20000000;
+  const forRent = forrent ? true : false;
+  const forSale = forsale ? true : false;
+
+  const query = generateQueryForAllCities(
+    priceFrom,
+    priceTo,
+    forRent,
+    forSale,
+    limit,
+    offset
+  );
+
+  // console.log(city, priceFrom, priceTo, forRent, forSale, limit, offset);
+  Advert.findAndCountAll(query)
     .then(adverts => {
       if (!adverts.rows) {
         return res.status(404).send({
