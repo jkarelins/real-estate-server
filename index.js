@@ -25,6 +25,6 @@ app.use("/payment", paymentRoute);
 const eachHour = "0 0-23 * * *";
 const every4Minutes = "*/4 0-23 * * *";
 const eachMinute = "* * * * *";
-generator(eachMinute);
+generator(eachHour);
 
 app.listen(port, () => console.log(`RealEstate API running on port ${port}!`));
