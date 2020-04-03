@@ -37,14 +37,14 @@ Server to run real estate project.
 - [FREE Create STRIPE Account](https://dashboard.stripe.com/register)
 - Create .env file in root folder of project with folowing content:
 
-CLOUDINARY_URL=Your cloudinary URL
-CLOUD_NAME=Your cloud name
-API_KEY=Cloudinary API KEY
-API_SECRET=Cloudinary API secret
-API_BASE_URL=Your Cloudinary base URL
-SECURE_DELIVERY_URL=Your Cloudinary secure delivery URL
+- CLOUDINARY_URL=Your cloudinary URL
+- CLOUD_NAME=Your cloud name
+- API_KEY=Cloudinary API KEY
+- API_SECRET=Cloudinary API secret
+- API_BASE_URL=Your Cloudinary base URL
+- SECURE_DELIVERY_URL=Your Cloudinary secure delivery URL
 
-STRIPE_KEY=Your Stripe key - begins with sk test
+- STRIPE_KEY=Your Stripe key - begins with sk test
 
 ## To deploy on Heroku 🔌
 
@@ -53,14 +53,14 @@ STRIPE_KEY=Your Stripe key - begins with sk test
 - After deployment go to project settings
 - Setup Config Vars
 
-CLOUDINARY_URL=Your cloudinary URL
-CLOUD_NAME=Your cloud name
-API_KEY=Cloudinary API KEY
-API_SECRET=Cloudinary API secret
-API_BASE_URL=Your Cloudinary base URL
-SECURE_DELIVERY_URL=Your Cloudinary secure delivery URL
+- CLOUDINARY_URL - Your cloudinary URL
+- CLOUD_NAME - Your cloud name
+- API_KEY - Cloudinary API KEY
+- API_SECRET - Cloudinary API secret
+- API_BASE_URL - Your Cloudinary base URL
+- SECURE_DELIVERY_URL - Your Cloudinary secure delivery URL
 
-STRIPE_KEY=Your Stripe key - begins with sk test
+- STRIPE_KEY - Your Stripe key - begins with sk test
 
 ## To test API is running 👍
 
