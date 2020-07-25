@@ -36,7 +36,10 @@ function generateQuery(
           limit: 1,
           include: [Image]
         }
-      ]
+      ],
+      order: [
+        ['createdAt', 'DESC'],
+      ],
     };
   } else if (forRent) {
     return {
@@ -63,7 +66,10 @@ function generateQuery(
           limit: 1,
           include: [Image]
         }
-      ]
+      ],
+      order: [
+        ['createdAt', 'DESC'],
+      ],
     };
   } else if (forSale) {
     return {
@@ -90,7 +96,10 @@ function generateQuery(
           limit: 1,
           include: [Image]
         }
-      ]
+      ],
+      order: [
+        ['createdAt', 'DESC'],
+      ],
     };
   } else {
     return {
@@ -116,7 +125,10 @@ function generateQuery(
           limit: 1,
           include: [Image]
         }
-      ]
+      ],
+      order: [
+        ['createdAt', 'DESC'],
+      ],
     };
   }
 }
@@ -150,7 +162,10 @@ function generateQueryForAllCities(
           limit: 1,
           include: [Image]
         }
-      ]
+      ],
+      order: [
+        ['createdAt', 'DESC'],
+      ],
     };
   } else if (forRent) {
     return {
@@ -174,7 +189,10 @@ function generateQueryForAllCities(
           limit: 1,
           include: [Image]
         }
-      ]
+      ],
+      order: [
+        ['createdAt', 'DESC'],
+      ],
     };
   } else if (forSale) {
     return {
@@ -198,7 +216,10 @@ function generateQueryForAllCities(
           limit: 1,
           include: [Image]
         }
-      ]
+      ],
+      order: [
+        ['createdAt', 'DESC'],
+      ],
     };
   }
 }
