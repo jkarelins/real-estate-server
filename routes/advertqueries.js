@@ -38,7 +38,7 @@ function generateQuery(
         }
       ],
       order: [
-        ['createdAt', 'ASC'],
+        ['createdAt', 'DESC'],
       ],
     };
   } else if (forRent) {
@@ -68,7 +68,7 @@ function generateQuery(
         }
       ],
       order: [
-        ['createdAt', 'ASC'],
+        ['createdAt', 'DESC'],
       ],
     };
   } else if (forSale) {
@@ -98,7 +98,7 @@ function generateQuery(
         }
       ],
       order: [
-        ['createdAt', 'ASC'],
+        ['createdAt', 'DESC'],
       ],
     };
   } else {
@@ -127,7 +127,7 @@ function generateQuery(
         }
       ],
       order: [
-        ['createdAt', 'ASC'],
+        ['createdAt', 'DESC'],
       ],
     };
   }
@@ -164,7 +164,7 @@ function generateQueryForAllCities(
         }
       ],
       order: [
-        ['createdAt', 'ASC'],
+        ['createdAt', 'DESC'],
       ],
     };
   } else if (forRent) {
@@ -191,7 +191,7 @@ function generateQueryForAllCities(
         }
       ],
       order: [
-        ['createdAt', 'ASC'],
+        ['createdAt', 'DESC'],
       ],
     };
   } else if (forSale) {
@@ -218,7 +218,7 @@ function generateQueryForAllCities(
         }
       ],
       order: [
-        ['createdAt', 'ASC'],
+        ['createdAt', 'DESC'],
       ],
     };
   }
