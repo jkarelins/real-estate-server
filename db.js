@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 
 const databaseURL =
   process.env.DATABASE_URL ||
-  "postgres://postgres:complicatedPassword@localhost:5432/postgres";
+  "postgres://postgres:password@localhost:5432/postgres";
 
 const db = new Sequelize(databaseURL, { logging: false });
 

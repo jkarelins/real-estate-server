@@ -164,7 +164,7 @@ function generateQueryForAllCities(
         }
       ],
       order: [
-        ['createdAt', 'DESC'],
+        ['createdAt', 'ASC'],
       ],
     };
   } else if (forRent) {
