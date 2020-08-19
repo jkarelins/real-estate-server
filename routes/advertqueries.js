@@ -22,6 +22,9 @@ function generateQuery(
           [Op.and]: [{ [Op.gt]: +priceFrom }, { [Op.lt]: +priceTo }]
         }
       },
+      order: [
+        ['createdAt', 'DESC'],
+      ],
       limit,
       offset,
       include: [
@@ -36,9 +39,6 @@ function generateQuery(
           limit: 1,
           include: [Image]
         }
-      ],
-      order: [
-        ['createdAt', 'DESC'],
       ],
     };
   } else if (forRent) {
@@ -52,6 +52,9 @@ function generateQuery(
         },
         isForRent: true
       },
+      order: [
+        ['createdAt', 'DESC'],
+      ],
       limit,
       offset,
       include: [
@@ -66,9 +69,6 @@ function generateQuery(
           limit: 1,
           include: [Image]
         }
-      ],
-      order: [
-        ['createdAt', 'DESC'],
       ],
     };
   } else if (forSale) {
@@ -82,6 +82,9 @@ function generateQuery(
         },
         isForSale: true
       },
+      order: [
+        ['createdAt', 'DESC'],
+      ],
       limit,
       offset,
       include: [
@@ -96,9 +99,6 @@ function generateQuery(
           limit: 1,
           include: [Image]
         }
-      ],
-      order: [
-        ['createdAt', 'DESC'],
       ],
     };
   } else {
@@ -111,6 +111,9 @@ function generateQuery(
           [Op.and]: [{ [Op.gt]: +priceFrom }, { [Op.lt]: +priceTo }]
         }
       },
+      order: [
+        ['createdAt', 'DESC'],
+      ],
       limit,
       offset,
       include: [
@@ -125,9 +128,6 @@ function generateQuery(
           limit: 1,
           include: [Image]
         }
-      ],
-      order: [
-        ['createdAt', 'DESC'],
       ],
     };
   }
