@@ -305,7 +305,10 @@ function finAllAdverts(req, res, next, limit, offset) {
         limit: 1,
         include: [Image]
       }
-    ]
+    ],
+    order: [
+      ['createdAt', 'DESC'],
+    ],
   })
     .then(adverts => {
       if (!adverts.rows) {
