@@ -8,8 +8,18 @@ const Advert = require("../models/advert");
 router.get('/cities', (req, res, next) => {
   Advert.findAll()
   .then(adverts => {
-    const cities = adverts.map(advert => advert.city);
+    const cities = [...new Set(adverts.map(advert => advert.city))];;
     res.send(cities);
+  })
+  .catch(next);
+});
+
+// Route to get all adverts id's
+router.get('/ids', (req, res, next) => {
+  Advert.findAll()
+  .then(adverts => {
+    const ids = adverts.map(advert => advert.id);
+    res.send(ids);
   })
   .catch(next);
 });
