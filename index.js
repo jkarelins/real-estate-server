@@ -9,6 +9,8 @@ const appointmentRoute = require("./routes/appointment");
 const imageRoute = require("./routes/images");
 const extraRoute = require("./routes/extra");
 const paymentRoute = require("./routes/payment");
+const seoRoute = require("./routes/seo");
+
 const generator = require("./crons/generator");
 
 app.use(require("cors")());
@@ -20,6 +22,8 @@ app.use("/appointment", appointmentRoute);
 app.use("/image", imageRoute);
 app.use("/extra", extraRoute);
 app.use("/payment", paymentRoute);
+app.use("/seo", seoRoute);
+
 
 //SHOULD RUN EACH HOUR
 const eachHour = "0 0-23 * * *";
